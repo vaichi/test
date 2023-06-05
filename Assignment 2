@@ -1,0 +1,84 @@
+import nltk
+from nltk.corpus import words
+from transformers import BertTokenizer
+
+nltk.download('words')
+
+# Load custom dictionary
+custom_dictionary = {
+    'teh': 'the',
+    'writting': 'writing',
+    'tomorow': 'tomorrow',
+    # Add more entries as needed
+}
+
+# Initialize BERT tokenizer
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+def perform_token_healing(text):
+    # Tokenization using BERT tokenizer
+    tokens = tokenizer.tokenize(text)
+
+    # Error correction
+    corrected_tokens = []
+    for token in tokens:
+        # Apply custom error rules
+        corrected_word = apply_custom_error_rules(token)
+        if corrected_word:
+            corrected_tokens.append(corrected_word)
+        else:
+            # Check if the token is misspelled
+            if not is_word(token):
+                # Get the most likely correct word from custom dictionary or contextual word suggestions
+                corrected_word = custom_dictionary.get(token.lower()) or suggest_word(token, tokens)
+                corrected_tokens.append(corrected_word)
+                # Prompt user for feedback
+                feedback = input(f"Is '{corrected_word}' the correct replacement for '{token}'? (y/n): ")
+                if feedback.lower() == 'n':
+                    new_word = input("Please enter the correct replacement: ")
+                    corrected_tokens[-1] = new_word
+            else:
+                corrected_tokens.append(token)
+
+    corrected_text = ' '.join(corrected_tokens)
+    return corrected_text
+
+
+def is_word(token):
+    # Check if the token is in the English vocabulary
+    english_vocab = set(words.words())
+    return token.lower() in english_vocab
+
+
+def suggest_word(token, tokens):
+    # Contextual word suggestion using BERT tokens
+    suggestions = []
+    for i, t in enumerate(tokens):
+        if t.lower() == token.lower():
+            # Get surrounding tokens for context
+            left_context = tokens[max(0, i - 3) : i]
+            right_context = tokens[i + 1 : i + 4]
+            context_tokens = left_context + right_context
+
+            # Add context tokens as suggestions
+            suggestions.extend(context_tokens)
+    return suggestions
+
+
+def apply_custom_error_rules(token):
+    # Define your custom error rules here
+    if token.lower() == 'gonna':
+        return 'going to'
+    elif token.lower() == 'wanna':
+        return 'want to'
+    # Add more custom rules as needed
+    else:
+        return None
+
+
+while True:
+    input_text = input("Enter a sentence (or 'exit' to quit): ")
+    if input_text.lower() == 'exit':
+        break
+    output_text = perform_token_healing(input_text)
+    print(output_text)
