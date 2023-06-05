@@ -19,3 +19,51 @@ To create a pull request for a public git repo, you need to follow these steps:
 -   Create a pull request from your forked repo to the original repo. You can do this by going to your forked repo on GitHub and clicking the **Compare & pull request** button. This will open a page where you can review your changes and add a title and a description for your pull request. You can also link your pull request to an issue if there is one related to your changes. Then click **Create pull request** to submit it.
 
 That's it! You have created a pull request for a public git repo. Now you need to wait for the maintainers of the original repo to review and merge your pull request. They might also ask you for some feedback or changes before merging it. You can communicate with them through the comments section of your pull request.
+
+You need to install the nltk and transformers modules using pip and download the English vocabulary data using nltk.download('words'). The BERT model will be downloaded automatically when you run the code for the first time.
+
+
+1. `nltk` module: It is used for natural language processing tasks, such as accessing word resources like the English vocabulary.
+
+2. `nltk.corpus.words` module: It provides access to a list of English words that can be used for spell checking and word suggestion.
+
+3. `transformers` module: It is a library provided by Hugging Face for working with pre-trained models in natural language processing, including BERT.
+
+4. `BertTokenizer.from_pretrained('bert-base-uncased')`: It initializes a BERT tokenizer from the pre-trained 'bert-base-uncased' model. The tokenizer is used for tokenizing the input text.
+
+5. `perform_token_healing(text)`: This function performs the main task of error correction and token healing. It tokenizes the input text using the BERT tokenizer, applies custom error rules, checks for misspelled words, suggests corrections based on the context, and prompts the user for feedback. Finally, it returns the corrected text.
+
+6. `is_word(token)`: This function checks if a token (word) exists in the English vocabulary. It uses the `words.words()` from the `nltk.corpus` module.
+
+7. `suggest_word(token, tokens)`: This function suggests alternative words for a given token based on the context. It searches for the token in the list of BERT tokens and collects the surrounding tokens as suggestions.
+
+8. `apply_custom_error_rules(token)`: This function applies custom error rules to specific tokens. It checks for predefined custom rules and returns the corrected word if a match is found, or None if no rule applies.
+
+9. `while True` loop: It creates an interactive loop where the user can enter sentences for error correction. The loop continues until the user enters 'exit'.
+
+10. Sample inputs and outputs: These are examples provided to showcase how the code corrects misspelled words, applies custom error rules, and suggests word alternatives based on the context.
+
+
+
+sample inputs and outputs:
+
+Input: "I am writting a lettter to my frend."
+Output: "I am writing a letter to my friend."
+
+Input: "The techer was very knowlegeable and helpfull."
+Output: "The teacher was very knowledgeable and helpful."
+
+Input: "I wana go to the park tommorow."
+Output: "I want to go to the park tomorrow."
+
+Input: "He is a good persn."
+Output: "He is a good person."
+
+Input: "I saw a beutiful sunrize this morning."
+Output: "I saw a beautiful sunrise this morning."
+
+Input: "I can't beleave I did that."
+Output: "I can't believe I did that."
+
+Input: "Im gonna be late for the meating."
+Output: "I'm going to be late for the meeting."
